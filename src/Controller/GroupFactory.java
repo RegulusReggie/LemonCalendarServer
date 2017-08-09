@@ -25,8 +25,8 @@ public class GroupFactory {
         }
     }
 
-    public static Group searchGroup (String name, int uid) throws SQLException, ClassNotFoundException {
-        String selectStmt = "SELECT * FROM LEMONCALENDAR.GROUP WHERE GROUPNAME = '" + name+ "' AND OWNER_ID = " + uid + ";";
+    public static Group searchGroup (String name) throws SQLException, ClassNotFoundException {
+        String selectStmt = "SELECT * FROM LEMONCALENDAR.GROUP WHERE GROUPNAME = '" + name + "';";
 
         try {
             ResultSet rsGp = DBAccess.getDBA().executeQuery(selectStmt);

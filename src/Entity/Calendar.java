@@ -1,14 +1,17 @@
 package Entity;
 
+import Controller.EventFactory;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Calendar {
+public class Calendar implements Serializable {
+    private static final long serialVersionUID = 1L;
     private IntegerProperty calendarid;
     private List<Integer> eventids;
     private IntegerProperty year;
@@ -40,10 +43,15 @@ public class Calendar {
     }
     public void setEventIds(List<Integer> eventId) {
         eventids = eventId;
-        /*for (String id : eventId) {
-            Event e = EventFactory.getEventById(id, year.get(), month.get());
-            addEvent(e);
-        }*/
+        for (int id : eventId) {
+            Event e;
+            try {
+                e = EventFactory.searchEventByEID(id);
+                addEvent(e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     //year
@@ -71,7 +79,7 @@ public class Calendar {
     public void addEvent(Event eve) {
         List<Event> eveList = eventsMap.get(eve.getDay());
         if (eveList == null) {
-            eveList = new ArrayList<Event>();
+            eveList = new ArrayList<>();
             eveList.add(eve);
             eventsMap.put(eve.getDay(), eveList);
         } else {

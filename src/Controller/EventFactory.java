@@ -7,22 +7,10 @@ import javafx.collections.ObservableList;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
+import java.sql.Statement;
 
 public class EventFactory {
     private EventFactory() {}
-
-    public static Event getEventById(int id, int year, int month, int cid) {
-        Random rand = new Random();
-        Event e = new Event();
-        e.setCalID(cid);
-        e.setDay(rand.nextInt(28) + 1);
-        e.setDescription(String.valueOf(id));
-        e.setMonth(month);
-        e.setYear(year);
-        e.setID(id);
-        return e;
-    }
 
     public static Event searchEventByEID (int eid) throws SQLException, ClassNotFoundException {
         String selectStmt = "SELECT * FROM event WHERE EVENT_ID="+eid;
@@ -99,13 +87,20 @@ public class EventFactory {
         DBAccess.getDBA().executeUpdate(updateStmt);
     }
 
-    public static void insertEvent (int year, int month, int day, String description, int cid) throws SQLException, ClassNotFoundException {
+    public static int insertEvent (int year, int month, int day, String description, int cid) throws SQLException, ClassNotFoundException {
         String updateStmt =
                 "INSERT INTO EVENT " +
                         "(YEAR, MONTH, DAY, DESCRIPTION, CALENDAR_ID) " +
                         "VALUES " +
                         "("+year+", "+month+", " + day + ", '"+description + "', "+ cid +"); ";
 
-        DBAccess.getDBA().executeUpdate(updateStmt);
+        Statement stmt = DBAccess.getDBA().getConnection().createStatement();
+        stmt.executeUpdate(updateStmt, Statement.RETURN_GENERATED_KEYS);
+        ResultSet generatedKeys = stmt.getGeneratedKeys();
+        int id = -1;
+        if (generatedKeys.next()) {
+            id = generatedKeys.getInt(1);
+        }
+        return id;
     }
 }
