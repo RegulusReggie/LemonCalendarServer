@@ -46,7 +46,7 @@ public class Event {
         obj.putField(Commons.MONTH, String.valueOf(getMonth()));
         obj.putField(Commons.YEAR, String.valueOf(getYear()));
         obj.putField(Commons.DAY, String.valueOf(getDay()));
-        obj.putField(Commons.DESCRIPTION, String.valueOf(getDescription()));
+        obj.putField(Commons.DESCRIPTION, getDescription());
         return obj;
     }
 }

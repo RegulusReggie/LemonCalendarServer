@@ -15,7 +15,7 @@ import Util.JSONObject;
 
 public class Server {
 
-    public static void main(String Stmt) {
+    public static void main() {
 
         DatagramSocket ds = null; //连接对象
 
@@ -89,54 +89,129 @@ public class Server {
         JSONObject obj = Commons.parseJSONObjectFromString(request);
         JSONObject respobj = new JSONObject();
         switch(Integer.valueOf(obj.getField(Commons.TYPE))) {
+            //CALENDAR
             case Commons.REQ_SEARCH_CALENDAR_BY_ID:
                 try {
-                    Calendar cal = CalendarFactory.searchCalendar(Integer.valueOf(obj.getField(Commons.CALENDAR_ID)));
+                    Calendar cal = CalendarFactory.searchCalendar(
+                            Integer.valueOf(obj.getField(Commons.CALENDAR_ID))
+                    );
                     if (cal != null) {
                         respobj = cal.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_CALENDAR));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
-
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
+
+            case Commons.REQ_SEARCH_CALENDAR_BY_GROUP_YEAR_MONTH:
+                try {
+                    Calendar cal = CalendarFactory.searchCalendar(
+                            Integer.valueOf(obj.getField(Commons.GROUP_ID)),
+                            Integer.valueOf(obj.getField(Commons.YEAR)),
+                            Integer.valueOf(obj.getField(Commons.MONTH))
+                    );
+                    if (cal != null) {
+                        respobj = cal.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_CALENDAR));
+                    }  else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
+                    }
+                } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_INSERT_CALENDAR:
+                try {
+                    int cid = CalendarFactory.insertCal(
+                            Commons.convertStringToList(obj.getField(Commons.CALENDAR_EVENT_IDS)),
+                            Integer.valueOf(obj.getField(Commons.YEAR)),
+                            Integer.valueOf(obj.getField(Commons.MONTH))
+                    );
+                    if (cid != -1) {
+                        respobj.putField(Commons.CALENDAR_ID, String.valueOf(cid));
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_CALENDAR_ID));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    }
+                } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_UPDATE_CALENDAR_EVENT:
+                try {
+                    CalendarFactory.updateCalEvent(
+                            Integer.valueOf(obj.getField(Commons.CALENDAR_ID)),
+                            Commons.convertStringToList(obj.getField(Commons.CALENDAR_EVENT_IDS))
+                    );
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
+                } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    e.printStackTrace();
+                }
+                break;
+
             //EVENT
             case Commons.REQ_SEARCH_EVENT_BY_ID:
                 try {
-                    Event evt = EventFactory.searchEventByEID(Integer.valueOf(obj.getField(Commons.EVENT_ID)));
+                    Event evt = EventFactory.searchEventByEID(
+                            Integer.valueOf(obj.getField(Commons.EVENT_ID))
+                    );
                     if (evt != null) {
                         respobj = evt.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_SEARCH_EVENT_BY_DATE:
                 try {
-                    Event evt = EventFactory.searchEventByDate(Integer.valueOf(obj.getField(Commons.YEAR)), Integer.valueOf(obj.getField(Commons.MONTH)), Integer.valueOf(obj.getField(Commons.DAY)));
+                    Event evt = EventFactory.searchEventByDate(
+                            Integer.valueOf(obj.getField(Commons.YEAR)),
+                            Integer.valueOf(obj.getField(Commons.MONTH)),
+                            Integer.valueOf(obj.getField(Commons.DAY))
+                    );
                     if (evt != null) {
                         respobj = evt.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();;
                 }
                 break;
 
             case Commons.REQ_INSERT_EVENT:
                 try {
-                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT_ID));
-                    respobj.putField(Commons.EVENT_ID, String.valueOf(EventFactory.insertEvent(
-                                    Integer.valueOf(obj.getField(Commons.YEAR)),
-                                    Integer.valueOf(obj.getField(Commons.MONTH)),
-                                    Integer.valueOf(obj.getField(Commons.DAY)),
-                                    obj.getField(Commons.DESCRIPTION),
-                                    Integer.valueOf(obj.getField(Commons.CALENDAR_ID)))));
-
+                    int eid = EventFactory.insertEvent(
+                            Integer.valueOf(obj.getField(Commons.YEAR)),
+                            Integer.valueOf(obj.getField(Commons.MONTH)),
+                            Integer.valueOf(obj.getField(Commons.DAY)),
+                            obj.getField(Commons.DESCRIPTION),
+                            Integer.valueOf(obj.getField(Commons.CALENDAR_ID))
+                    );
+                    if (eid != -1) {
+                        respobj.putField(Commons.EVENT_ID, String.valueOf(eid));
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT_ID));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
@@ -152,39 +227,54 @@ public class Server {
                     );
                     respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_DELETE_EVENT:
                 try {
-                    EventFactory.deleteEventWithId(Integer.valueOf(obj.getField(Commons.EVENT_ID)));
+                    EventFactory.deleteEventWithId(
+                            Integer.valueOf(obj.getField(Commons.EVENT_ID))
+                    );
                     respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
+
             //GROUP
             case Commons.REQ_SEARCH_GROUP_BY_ID:
                 try {
-                    Group gp = GroupFactory.searchGroup(Integer.valueOf(obj.getField(Commons.GROUP_ID)));
+                    Group gp = GroupFactory.searchGroup(
+                            Integer.valueOf(obj.getField(Commons.GROUP_ID))
+                    );
                     if (gp != null) {
                         respobj = gp.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_SEARCH_GROUP_BY_NAME:
                 try {
-                    Group gp = GroupFactory.searchGroup(Commons.GROUPNAME);
+                    Group gp = GroupFactory.searchGroup(
+                            obj.getField(Commons.GROUPNAME)
+                    );
                     if (gp != null) {
                         respobj = gp.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
@@ -197,72 +287,102 @@ public class Server {
                     );
                     respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_INSERT_GROUP:
                 try {
-                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP_ID));
-                    respobj.putField(Commons.GROUP_ID, String.valueOf(GroupFactory.insertGp(
+                    int gid = GroupFactory.insertGp(
                             obj.getField(Commons.GROUPNAME),
                             Commons.convertStringToList(obj.getField(Commons.MEMBERS_ID)),
-                            Integer.valueOf(obj.getField(Commons.OWNERS_ID)))));
+                            Integer.valueOf(obj.getField(Commons.OWNERS_ID))
+                    );
+                    if (gid != -1) {
+                        respobj.putField(Commons.GROUP_ID, String.valueOf(gid));
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP_ID));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
             //USER
             case Commons.REQ_SEARCH_USER_BY_ID:
                 try {
-                    User ur = UserFactory.getUserById(Integer.valueOf(obj.getField(Commons.USER_ID)));
+                    User ur = UserFactory.getUserById(
+                            Integer.valueOf(obj.getField(Commons.USER_ID))
+                    );
                     if (ur != null) {
                         respobj = ur.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_SEARCH_USER_BY_NAME:
                 try {
-                    User ur = UserFactory.getUserByName(Commons.USERNAME);
+                    User ur = UserFactory.getUserByName(
+                            obj.getField(Commons.USERNAME)
+                    );
                     if (ur != null) {
                         respobj = ur.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.NOT_FOUND));
                     }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_INSERT_USER:
                 try {
-                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
-                    respobj.putField(Commons.USER_ID, String.valueOf(UserFactory.insertUser(
+                    int uid = UserFactory.insertUser(
                             obj.getField(Commons.USERNAME),
                             obj.getField(Commons.PASSWORD)
-                            )));
+                    );
+                    if (uid != -1) {
+                        respobj.putField(Commons.USER_ID, String.valueOf(uid));
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             case Commons.REQ_CHECK_USER_LOGIN:
                 try {
-                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
-                    respobj.putField(Commons.USER_ID, String.valueOf(UserFactory.checkLogin(
+                    int uid = UserFactory.checkLogin(
                             obj.getField(Commons.USERNAME),
                             obj.getField(Commons.PASSWORD)
-                    )));
+                    );
+                    if (uid != -1) {
+                        respobj.putField(Commons.USER_ID, String.valueOf(uid));
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
+                    } else {
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    }
                 } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
             default:
-                return "-1";
+                respobj.putField(Commons.TYPE, String.valueOf(Commons.REQ_NOT_FOUND));
         }
         return respobj.toString();
     }

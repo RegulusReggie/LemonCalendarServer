@@ -31,6 +31,7 @@ public class Commons {
     public static final int REQ_SEARCH_USER_BY_NAME = 15;
     public static final int REQ_INSERT_USER = 16;
     public static final int REQ_CHECK_USER_LOGIN = 17;
+    public static final int REQ_NOT_FOUND = 404;
 
     //RESPOND
     public static final int RESPOND_CALENDAR = 50;
@@ -43,7 +44,7 @@ public class Commons {
     public static final int RESPOND_USER_ID = 57;
     public static final int SUCCESS = 100;
     public static final int FAIL = 101;
-
+    public static final int NOT_FOUND = 102;
 
     public static final String TYPE = "Type";
     //CALENDAR
@@ -96,7 +97,10 @@ public class Commons {
         JSONObject obj = new JSONObject();
         for (String set : sets) {
             String[] pair = set.split("=");
-            obj.putField(pair[0], pair[1]);
+            if (pair.length == 2)
+                obj.putField(pair[0], pair[1]);
+            else
+                obj.putField(pair[0], "");
         }
         return obj;
     }

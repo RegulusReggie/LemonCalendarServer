@@ -47,9 +47,9 @@ public class User implements Serializable{
 
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
-        obj.putField(Commons.GROUP_ID, String.valueOf(getUserId()));
-        obj.putField(Commons.GROUPNAME, getUserName());
-        obj.putField(Commons.GROUPNAME, getPassword());
+        obj.putField(Commons.USER_ID, String.valueOf(getUserId()));
+        obj.putField(Commons.USERNAME, getUserName());
+        obj.putField(Commons.PASSWORD, getPassword());
         return obj;
     }
 }

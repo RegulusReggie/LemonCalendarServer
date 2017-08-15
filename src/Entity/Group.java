@@ -64,7 +64,7 @@ public class Group {
         JSONObject obj = new JSONObject();
         obj.putField(Commons.GROUP_ID, String.valueOf(getGroupId()));
         obj.putField(Commons.GROUPNAME, getGroupName());
-        obj.putField(Commons.MEMBERS_ID, String.valueOf(Commons.convertListToString(getMembersId())));
+        obj.putField(Commons.MEMBERS_ID, Commons.convertListToString(getMembersId()));
         obj.putField(Commons.OWNERS_ID, String.valueOf(getOwnerId()));
         return obj;
     }
