@@ -23,7 +23,8 @@ public class JSONObject {
         for (String key : fields.keySet()) {
             builder = builder.append(key).append('=').append(fields.get(key)).append('&');
         }
-        builder = builder.deleteCharAt(builder.length() - 1);
+        if (builder.length() > 0)
+            builder = builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
 }

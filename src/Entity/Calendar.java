@@ -1,6 +1,8 @@
 package Entity;
 
 import Controller.EventFactory;
+import Util.Commons;
+import Util.JSONObject;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -89,5 +91,15 @@ public class Calendar implements Serializable {
 
     public List<Event> getEventListByDay(int day) {
         return eventsMap.get(day);
+    }
+
+
+    public JSONObject toJSON() {
+        JSONObject obj = new JSONObject();
+        obj.putField(Commons.CALENDAR_ID, String.valueOf(getCalendarId()));
+        obj.putField(Commons.CALENDAR_EVENT_IDS, Commons.convertListToString(getEventIds()));
+        obj.putField(Commons.MONTH, String.valueOf(getMonth()));
+        obj.putField(Commons.YEAR, String.valueOf(getYear()));
+        return obj;
     }
 }

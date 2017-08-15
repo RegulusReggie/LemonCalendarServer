@@ -43,7 +43,11 @@ public class Commons {
     public static final int RESPOND_USER_ID = 57;
 
     public static final String TYPE = "Type";
+    //CALENDAR
     public static final String CALENDAR_ID = "cid";
+    public static final String MONTH = "month";
+    public static final String YEAR = "year";
+    public static final String CALENDAR_EVENT_IDS = "eventids";
     //EVENT
     public static final String EVENT_ID = "eid";
     public static final String DAY = "day";

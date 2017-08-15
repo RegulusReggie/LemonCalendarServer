@@ -56,19 +56,15 @@ public class Server {
 
                 System.out.println("客户端发送内容：" + new String(data,0,len));
 
-                int id = handleRequest(new String(data, 0, len));
-
                 //发送反馈
 
-
-                byte[] bData = String.valueOf(id).getBytes();
+                byte[] bData = handleRequest(new String(data, 0, len)).getBytes();
 
                 sendDp = new DatagramPacket(bData,bData.length,clientIP,clientPort);
 
                 //发送
 
                 ds.send(sendDp);
-
             }catch(Exception e){
 
                 e.printStackTrace();
@@ -86,18 +82,25 @@ public class Server {
         }
     }
 
-    private static int handleRequest(String request) {
+    private static String handleRequest(String request) {
         JSONObject obj = Commons.parseJSONObjectFromString(request);
+        JSONObject respobj = new JSONObject();
         switch(Integer.valueOf(obj.getField(Commons.TYPE))) {
             case Commons.REQ_SEARCH_CALENDAR_BY_ID:
                 try {
                     Calendar cal = CalendarFactory.searchCalendar(Integer.valueOf(obj.getField(Commons.CALENDAR_ID)));
+                    if (cal != null) {
+                        respobj = cal.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_CALENDAR));
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                return Integer.valueOf(obj.getField(Commons.CALENDAR_ID));
+                break;
             default:
-                return -1;
+                return "-1";
         }
+        return respobj.toString();
     }
 }
