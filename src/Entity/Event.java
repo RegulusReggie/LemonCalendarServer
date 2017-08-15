@@ -1,5 +1,7 @@
 package Entity;
 
+import Util.Commons;
+import Util.JSONObject;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,4 +39,14 @@ public class Event {
     public void setDescription(String description) { this.description.set(description); }
     public int getCalID() { return this.cal_id.get(); }
     public void setCalID(int id) { this.cal_id.set(id); }
+    public JSONObject toJSON() {
+        JSONObject obj = new JSONObject();
+        obj.putField(Commons.EVENT_ID, String.valueOf(getID()));
+        obj.putField(Commons.CALENDAR_ID, String.valueOf(getCalID()));
+        obj.putField(Commons.MONTH, String.valueOf(getMonth()));
+        obj.putField(Commons.YEAR, String.valueOf(getYear()));
+        obj.putField(Commons.DAY, String.valueOf(getDay()));
+        obj.putField(Commons.DESCRIPTION, String.valueOf(getDescription()));
+        return obj;
+    }
 }

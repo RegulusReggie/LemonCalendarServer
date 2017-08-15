@@ -41,6 +41,9 @@ public class Commons {
     public static final int RESPOND_GROUP_ID = 55;
     public static final int RESPOND_USER = 56;
     public static final int RESPOND_USER_ID = 57;
+    public static final int SUCCESS = 100;
+    public static final int FAIL = 101;
+
 
     public static final String TYPE = "Type";
     //CALENDAR

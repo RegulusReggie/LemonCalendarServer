@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.net.*;
 
 import Controller.CalendarFactory;
+import Controller.EventFactory;
+import Controller.GroupFactory;
 import Entity.*;
 import Util.Commons;
 import Util.JSONObject;
@@ -98,6 +100,94 @@ public class Server {
                     e.printStackTrace();
                 }
                 break;
+            //EVENT
+            case Commons.REQ_SEARCH_EVENT_BY_ID:
+                try {
+                    Event evt = EventFactory.searchEventByEID(Integer.valueOf(obj.getField(Commons.EVENT_ID)));
+                    if (evt != null) {
+                        respobj = evt.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_SEARCH_EVENT_BY_DATE:
+                try {
+                    Event evt = EventFactory.searchEventByDate(Integer.valueOf(obj.getField(Commons.YEAR)), Integer.valueOf(obj.getField(Commons.MONTH)), Integer.valueOf(obj.getField(Commons.DAY)));
+                    if (evt != null) {
+                        respobj = evt.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();;
+                }
+                break;
+
+            case Commons.REQ_INSERT_EVENT:
+                try {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_EVENT_ID));
+                    respobj.putField(Commons.EVENT_ID, String.valueOf(EventFactory.insertEvent(
+                                    Integer.valueOf(obj.getField(Commons.YEAR)),
+                                    Integer.valueOf(obj.getField(Commons.MONTH)),
+                                    Integer.valueOf(obj.getField(Commons.DAY)),
+                                    obj.getField(Commons.DESCRIPTION),
+                                    Integer.valueOf(obj.getField(Commons.CALENDAR_ID)))));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_UPDATE_EVENT:
+                try {
+                    EventFactory.updateEvent(
+                            Integer.valueOf(obj.getField(Commons.EVENT_ID)),
+                            Integer.valueOf(obj.getField(Commons.YEAR)),
+                            Integer.valueOf(obj.getField(Commons.MONTH)),
+                            Integer.valueOf(obj.getField(Commons.DAY)),
+                            obj.getField(Commons.DESCRIPTION)
+                    );
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_DELETE_EVENT:
+                try {
+                    EventFactory.deleteEventWithId(Integer.valueOf(obj.getField(Commons.EVENT_ID)));
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            //GROUP
+            case Commons.REQ_SEARCH_GROUP_BY_ID:
+                try {
+                    Group gp = GroupFactory.searchGroup(Integer.valueOf(obj.getField(Commons.GROUP_ID)));
+                    if (gp != null) {
+                        respobj = gp.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_SEARCH_GROUP_BY_NAME:
+                try {
+                    Group gp = GroupFactory.searchGroup(Commons.GROUPNAME);
+                    if (gp != null) {
+                        respobj = gp.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
             default:
                 return "-1";
         }

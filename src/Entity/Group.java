@@ -1,5 +1,7 @@
 package Entity;
 
+import Util.Commons;
+import Util.JSONObject;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,5 +58,14 @@ public class Group {
     }
     public IntegerProperty ownerIdProperty() {
         return ownerid;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject obj = new JSONObject();
+        obj.putField(Commons.GROUP_ID, String.valueOf(getGroupId()));
+        obj.putField(Commons.GROUPNAME, getGroupName());
+        obj.putField(Commons.MEMBERS_ID, String.valueOf(Commons.convertListToString(getMembersId())));
+        obj.putField(Commons.OWNERS_ID, String.valueOf(getOwnerId()));
+        return obj;
     }
 }
