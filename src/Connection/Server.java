@@ -8,6 +8,7 @@ import java.net.*;
 import Controller.CalendarFactory;
 import Controller.EventFactory;
 import Controller.GroupFactory;
+import Controller.UserFactory;
 import Entity.*;
 import Util.Commons;
 import Util.JSONObject;
@@ -183,6 +184,78 @@ public class Server {
                         respobj = gp.toJSON();
                         respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP));
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_UPDATE_GROUP_MEMBER:
+                try {
+                    GroupFactory.updateGpMember(
+                            Integer.valueOf(obj.getField(Commons.GROUP_ID)),
+                            Commons.convertStringToList(obj.getField(Commons.MEMBERS_ID))
+                    );
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_INSERT_GROUP:
+                try {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP_ID));
+                    respobj.putField(Commons.GROUP_ID, String.valueOf(GroupFactory.insertGp(
+                            obj.getField(Commons.GROUPNAME),
+                            Commons.convertStringToList(obj.getField(Commons.MEMBERS_ID)),
+                            Integer.valueOf(obj.getField(Commons.OWNERS_ID)))));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            //USER
+            case Commons.REQ_SEARCH_USER_BY_ID:
+                try {
+                    User ur = UserFactory.getUserById(Integer.valueOf(obj.getField(Commons.USER_ID)));
+                    if (ur != null) {
+                        respobj = ur.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_SEARCH_USER_BY_NAME:
+                try {
+                    User ur = UserFactory.getUserByName(Commons.USERNAME);
+                    if (ur != null) {
+                        respobj = ur.toJSON();
+                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_INSERT_USER:
+                try {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
+                    respobj.putField(Commons.USER_ID, String.valueOf(UserFactory.insertUser(
+                            obj.getField(Commons.USERNAME),
+                            obj.getField(Commons.PASSWORD)
+                            )));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_CHECK_USER_LOGIN:
+                try {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
+                    respobj.putField(Commons.USER_ID, String.valueOf(UserFactory.checkLogin(
+                            obj.getField(Commons.USERNAME),
+                            obj.getField(Commons.PASSWORD)
+                    )));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
