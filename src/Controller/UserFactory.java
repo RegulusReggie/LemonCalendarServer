@@ -61,24 +61,4 @@ public class UserFactory {
         }
         return id;
     }
-
-    public static int checkLogin(String username, String password) throws SQLException {
-        Statement stmt = DBAccess.getDBA().getConnection().createStatement();
-        String selectStmt = "SELECT * FROM user WHERE username ='"+username + "';";
-        int uid = -1;
-        try {
-            ResultSet rs = DBAccess.getDBA().executeQuery(selectStmt);
-            if (!rs.next()) {
-                System.out.println("No user match");
-            } else if (!rs.getString("PASSWORD").equals(password)) {
-                System.out.println("Password doesn't match");
-            } else {
-                uid = rs.getInt("USER_ID");
-            }
-        } catch (SQLException e) {
-            System.out.println("While searching a user with " + username + " username, an error occurred: " +e);
-            throw e;
-        }
-        return uid;
-    }
 }

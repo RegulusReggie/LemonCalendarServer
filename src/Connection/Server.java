@@ -1,14 +1,8 @@
 package Connection;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.*;
 
-import Controller.CalendarFactory;
-import Controller.EventFactory;
-import Controller.GroupFactory;
-import Controller.UserFactory;
+import Controller.*;
 import Entity.*;
 import Util.Commons;
 import Util.JSONObject;
@@ -363,24 +357,43 @@ public class Server {
                 }
                 break;
 
-            case Commons.REQ_CHECK_USER_LOGIN:
+            case Commons.REQ_INSERTG2C:
                 try {
-                    int uid = UserFactory.checkLogin(
-                            obj.getField(Commons.USERNAME),
-                            obj.getField(Commons.PASSWORD)
+                    GroupToCalendarDB.insertG2C(
+                            Integer.valueOf(obj.getField(Commons.GROUP_ID)),
+                            Integer.valueOf(obj.getField(Commons.CALENDAR_ID))
                     );
-                    if (uid != -1) {
-                        respobj.putField(Commons.USER_ID, String.valueOf(uid));
-                        respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_USER_ID));
-                    } else {
-                        respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
-                    }
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
                 } catch (Exception e) {
                     respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
                     e.printStackTrace();
                 }
                 break;
 
+            case Commons.REQ_INSERTG2U:
+                try {
+                    GroupToUserDB.insertG2U(
+                            Integer.valueOf(obj.getField(Commons.GROUP_ID)),
+                            Integer.valueOf(obj.getField(Commons.USER_ID))
+                    );
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.SUCCESS));
+                } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    e.printStackTrace();
+                }
+                break;
+
+            case Commons.REQ_GET_GROUPS_BY_USER_ID:
+                try {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.RESPOND_GROUP_IDS));
+                    respobj.putField(Commons.GROUP_IDS, Commons.convertListToString(
+                            GroupToUserDB.getGroupsByUserId(Integer.valueOf(obj.getField(Commons.USER_ID)))
+                    ));
+                } catch (Exception e) {
+                    respobj.putField(Commons.TYPE, String.valueOf(Commons.FAIL));
+                    e.printStackTrace();
+                }
+                break;
             default:
                 respobj.putField(Commons.TYPE, String.valueOf(Commons.REQ_NOT_FOUND));
         }

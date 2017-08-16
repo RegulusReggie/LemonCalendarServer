@@ -30,7 +30,11 @@ public class Commons {
     public static final int REQ_SEARCH_USER_BY_ID = 14;
     public static final int REQ_SEARCH_USER_BY_NAME = 15;
     public static final int REQ_INSERT_USER = 16;
-    public static final int REQ_CHECK_USER_LOGIN = 17;
+    //GROUPTOUSER
+    public static final int REQ_INSERTG2U = 17;
+    public static final int REQ_GET_GROUPS_BY_USER_ID = 18;
+    //GROUPTOCALENDAR
+    public static final int REQ_INSERTG2C = 19;
     public static final int REQ_NOT_FOUND = 404;
 
     //RESPOND
@@ -40,6 +44,7 @@ public class Commons {
     public static final int RESPOND_EVENT_ID = 53;
     public static final int RESPOND_GROUP = 54;
     public static final int RESPOND_GROUP_ID = 55;
+    public static final int RESPOND_GROUP_IDS = 58;
     public static final int RESPOND_USER = 56;
     public static final int RESPOND_USER_ID = 57;
     public static final int SUCCESS = 100;
@@ -65,6 +70,8 @@ public class Commons {
     public static final String USER_ID = "uid";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    //Other
+    public static final String GROUP_IDS = "gids";
 
     public static List<Integer> convertStringToList(String s) {
         if (s != null && !s.isEmpty()) {
